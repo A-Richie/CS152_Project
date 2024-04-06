@@ -19,7 +19,19 @@ public class Pawn extends Piece {
                 if(newX == x && newY <= y+1) return true;
             }
         }
+        if(isOverlap() == true) {
+            if(isWhite){
+                if((newX == x+1 && newY <= y-1) || (newX == x-1 && newY <= y-1)) return true;
+            } else {
+                if((newX == x+1 && newY <= y+1) || (newX == x-1 && newY <= y+1)) return true;
+            }
+        }
 
         return false;
+    }
+
+    //need to add this to all pieces so this is a placeholder for now
+    public boolean isOverlap() {
+        return true;
     }
 }

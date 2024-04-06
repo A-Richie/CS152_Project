@@ -11,4 +11,9 @@ public class Queen extends Piece {
 
         return (dx == 0 || dy == 0 || dx == dy);
     }
+
+    //need to add this to all pieces so this is a placeholder for now
+    public boolean isOverlap() {
+        return true;
+    }
 }
