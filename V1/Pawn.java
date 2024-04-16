@@ -4,26 +4,26 @@ public class Pawn extends Piece {
     }
 
     @Override
-    public boolean isValidMove(int newX, int newY) {
+    public boolean isValidMove(int pX, int pY, int newX, int newY) {
         if(!isInBounds(newX, newY)) return false;
         if(hasMoved == false){
             if(isWhite){
-                if(newX == x && newY <= y-2) return true;
+                if(newX == pX && newY <= pY-2) return true;
             } else {
-                if(newX == x && newY <= y+2) return true;
+                if(newX == pX && newY <= pY+2) return true;
             }
         } else {
             if(isWhite){
-                if(newX == x && newY <= y-1) return true;
+                if(newX == pX && newY <= pY-1) return true;
             } else {
-                if(newX == x && newY <= y+1) return true;
+                if(newX == pX && newY <= pY+1) return true;
             }
         }
-        if(isOverlap() == true) {
+        if(isOverlapStep() == true) {
             if(isWhite){
-                if((newX == x+1 && newY <= y-1) || (newX == x-1 && newY <= y-1)) return true;
+                if((newX == pX+1 && newY <= pY-1) || (newX == pX-1 && newY <= pY-1)) return true;
             } else {
-                if((newX == x+1 && newY <= y+1) || (newX == x-1 && newY <= y+1)) return true;
+                if((newX == pX+1 && newY <= pY+1) || (newX == pX-1 && newY <= pY+1)) return true;
             }
         }
 
@@ -31,7 +31,8 @@ public class Pawn extends Piece {
     }
 
     //need to add this to all pieces so this is a placeholder for now
-    public boolean isOverlap() {
-        return true;
+    @Override
+    public boolean isOverlapStep() {
+        return false;
     }
 }

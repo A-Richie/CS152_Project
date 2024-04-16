@@ -9,7 +9,10 @@ import javafx.stage.Stage;
 public class Main extends Application {
 
     public static void main(String[] args) {
-        launch();
+        GameLogic game = new GameLogic("Player 1", "Player 2");
+        game.displayBoard();
+        game.gameFlow();
+        // launch();
     }
 
     @Override

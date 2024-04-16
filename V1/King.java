@@ -4,16 +4,17 @@ public class King extends Piece {
     }
 
     @Override
-    public boolean isValidMove(int newX, int newY) {
+    public boolean isValidMove(int pX, int pY, int newX, int newY) {
         if(!isInBounds(newX, newY)) return false;
-        if(newX <= x+1 && newX >= x-1 && newY <= y+1 && newY >= y-1) {
+        if(newX <= pX+1 && newX >= pX-1 && newY <= pY+1 && newY >= pY-1) {
             return true;
         }
         return false;
     }
 
     //need to add this to all pieces so this is a placeholder for now
-    public boolean isOverlap() {
-        return true;
+    @Override
+    public boolean isOverlapStep() {
+        return false;
     }
 }

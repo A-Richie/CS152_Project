@@ -1,6 +1,6 @@
 public abstract class Piece {
     protected final boolean isWhite;
-    protected int x, y; // (0,0) is set to top left as default by JavaFX (more consistent this way)
+    private int x, y; // (0,0) is set to top left as default by JavaFX (more consistent this way)
     protected boolean hasMoved;
 
     public Piece(int x, int y, boolean isWhite) {
@@ -10,7 +10,9 @@ public abstract class Piece {
         this.hasMoved = false;
     }
 
-    public abstract boolean isValidMove(int newX, int newY);
+    public abstract boolean isValidMove(int pX, int pY, int newX, int newY);
+
+    public abstract boolean isOverlapStep();
 
     public boolean isInBounds(int newX, int newY){
         if(newX >= 0 && newX <= 7 && newY >= 0 && newY <= 7) return true;

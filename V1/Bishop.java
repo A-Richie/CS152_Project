@@ -4,10 +4,10 @@ public class Bishop extends Piece {
     }
 
     @Override
-    public boolean isValidMove(int newX, int newY) {
+    public boolean isValidMove(int pX, int pY, int newX, int newY) {
         if(!isInBounds(newX, newY)) return false;
-        int dx = newX - x;
-        int dy = newY - y;
+        int dx = newX - pX;
+        int dy = newY - pY;
         if (Math.abs(dx) == Math.abs(dy)) {
             return true;
         }
@@ -15,7 +15,8 @@ public class Bishop extends Piece {
     }
 
     //need to add this to all pieces so this is a placeholder for now
-    public boolean isOverlap() {
-        return true;
+    @Override
+    public boolean isOverlapStep() {
+        return false;
     }
 }

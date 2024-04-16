@@ -34,4 +34,8 @@ public class Player {
     public boolean isCheckmate() {
         return isCheckmate;
     }
+
+    public void addTakenPiece(Piece piece){
+        takenPieces.add(piece);
+    }
 }
