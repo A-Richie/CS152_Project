@@ -51,7 +51,8 @@ public class GameLogic {
         String pieceToPlay = "";
         String putPiece = "";
         while(isGameOver == false){
-            System.out.println(p1.getName() + "'s Turn");
+            if(whiteTurn) System.out.println(p1.getName() + "'s Turn");
+            else System.out.println(p2.getName() + "'s Turn");
             System.out.println("Enter piece to move in format 'xy' (ex. (5,3) is 53):");
             pieceToPlay = scan.nextLine();
             int x = Integer.parseInt(pieceToPlay.substring(0,1));
@@ -62,26 +63,89 @@ public class GameLogic {
             int newY = Integer.parseInt(putPiece.substring(1));
             movePiece(x,y,newX,newY, whiteTurn);
             displayBoard();
+            whiteTurn = !whiteTurn;
         }
     }
 
     private boolean movePiece(int x, int y, int newX, int newY, boolean whiteTurn) {
         if(board[y][x].isWhite != whiteTurn) return false;
-        if(!(board[y][x].isValidMove(x, y, newX, newY))) return false;
-        if(board[newY][newX] != null){
-            if(board[newY][newX].isWhite == board[y][x].isWhite) return false;
+        boolean isPawn = board[y][x].getClass().getSimpleName().equals("Pawn");
+        boolean isBishop = board[y][x].getClass().getSimpleName().equals("Bishop");
+        boolean isRook = board[y][x].getClass().getSimpleName().equals("Rook");
+        boolean isQueen = board[y][x].getClass().getSimpleName().equals("Queen");
+        if(isBishop && hasObstructionsDiagonal(x, y, newX, newY)) return false;
+        else if(isRook && hasObstructionsStraight(x, y, newX, newY)) return false;
+        else if(isQueen && (hasObstructionsStraight(x, y, newX, newY) || hasObstructionsStraight(x, y, newX, newY))) return false;
+        if(isPawn && isDiagonalPawn(x,y,newX,newY, whiteTurn)){
+            if(board[newY][newX] == null) return false;
+        } else {
+            if (!(board[y][x].isValidMove(x, y, newX, newY))) return false;
+        }
+        if (board[newY][newX] != null) {
+            if (board[newY][newX].isWhite == board[y][x].isWhite) return false;
             else {
-                capturedPieces.add(board[y][x]);
-                if(whiteTurn) p1.addTakenPiece(board[y][x]);
-                else p2.addTakenPiece(board[y][x]);
+                capturedPieces.add(board[newY][newX]);
+                if (whiteTurn) p1.addTakenPiece(board[newY][newX]);
+                else p2.addTakenPiece(board[newY][newX]);
             }
         }
         board[newY][newX] = board[y][x];
-        if(board[y][x].hasMoved == false) board[y][x].hasMoved = true;
+        if(board[newY][newX].hasMoved == false) board[newY][newX].hasMoved = true;
         board[y][x].setX(newX);
         board[y][x].setY(newY);
         board[y][x] = null;
         return true;
+    }
+
+    private boolean hasObstructionsStraight(int x, int y, int newX, int newY) {
+        int xInc, yInc;
+        if (newX > x) xInc = 1;
+        else if (newX < x) xInc = -1;
+        else xInc = 0;
+        if (newY > y) yInc = 1;
+        else if (newY < y) yInc = -1;
+        else yInc = 0;
+
+        if (xInc != 0) {
+            int currentX = x + xInc;
+            while (currentX != newX) {
+                if (board[y][currentX] != null) return true;
+                currentX += xInc;
+            }
+        }
+
+        if (yInc != 0) {
+            int currentY = y + yInc;
+            while (currentY != newY) {
+                if (board[currentY][x] != null) return true;
+                currentY += yInc;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean hasObstructionsDiagonal(int x, int y, int newX, int newY) {
+        int xInc, yInc;
+        if(newX > x) xInc = 1;
+        else xInc = -1;
+        if(newY > y) yInc = 1;
+        else yInc = -1;
+
+        int currX = x + xInc;
+        int currY = y + yInc;
+
+        while (currX != newX && currY != newY) {
+            if (board[currY][currX] != null) return true;
+            currX += xInc;
+            currY += yInc;
+        }
+        return false;
+    }
+
+    private boolean isDiagonalPawn(int x, int y, int newX, int newY, boolean whiteTurn) {
+        if (whiteTurn) return (newX == x + 1 || newX == x - 1) && newY == y - 1;
+        else return (newX == x + 1 || newX == x - 1) && newY == y + 1;
     }
 
     public void displayBoard(){

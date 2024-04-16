@@ -5,14 +5,14 @@ public class Player {
     private boolean isWhite;
     private ArrayList<Piece> takenPieces;
     private int countChecks;
-    private boolean isCheckmate; //may not need this
+    private boolean isCheck; //may not need this
 
     public Player(String name, boolean isWhite){
         this.name = name;
         this.isWhite = isWhite;
         takenPieces = new ArrayList<>();
         countChecks = 0;
-        isCheckmate = false;
+        isCheck = false;
     }
 
     public String getName() {
@@ -31,8 +31,8 @@ public class Player {
         return countChecks;
     }
 
-    public boolean isCheckmate() {
-        return isCheckmate;
+    public boolean isCheck() {
+        return isCheck;
     }
 
     public void addTakenPiece(Piece piece){

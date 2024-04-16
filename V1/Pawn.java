@@ -6,29 +6,22 @@ public class Pawn extends Piece {
     @Override
     public boolean isValidMove(int pX, int pY, int newX, int newY) {
         if(!isInBounds(newX, newY)) return false;
-        if(hasMoved == false){
-            if(isWhite){
-                if(newX == pX && newY <= pY-2) return true;
-            } else {
-                if(newX == pX && newY <= pY+2) return true;
+        if (isWhite) {
+            if (!hasMoved && newX == pX && (newY == pY - 2 || newY == pY - 1)) {
+                hasMoved = true;
+                return true;
             }
-        } else {
-            if(isWhite){
-                if(newX == pX && newY <= pY-1) return true;
-            } else {
-                if(newX == pX && newY <= pY+1) return true;
-            }
+            return newX == pX && newY == pY - 1;
         }
-        if(isOverlapStep() == true) {
-            if(isWhite){
-                if((newX == pX+1 && newY <= pY-1) || (newX == pX-1 && newY <= pY-1)) return true;
-            } else {
-                if((newX == pX+1 && newY <= pY+1) || (newX == pX-1 && newY <= pY+1)) return true;
+        else {
+            if (!hasMoved && newX == pX && (newY == pY + 2 || newY == pY + 1)) {
+                hasMoved = true;
+                return true;
             }
+            return newX == pX && newY == pY + 1;
         }
-
-        return false;
     }
+
 
     //need to add this to all pieces so this is a placeholder for now
     @Override
