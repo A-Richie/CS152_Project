@@ -19,10 +19,6 @@ public class Player {
         return name;
     }
 
-    public boolean isWhite() {
-        return isWhite;
-    }
-
     public ArrayList<Piece> getTakenPieces() {
         return takenPieces;
     }

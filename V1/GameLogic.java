@@ -2,13 +2,15 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class GameLogic {
-    // this needs to be worked on
-
+    //Declare board itself for 2d-game
     private Piece[][] board;
     private Player p1, p2;
+
+    //Keeps track of captured pieces during game
     private ArrayList<Piece> capturedPieces;
     private boolean isGameOver;
 
+    //Initialize players, board, and pieces for a game
     public GameLogic(String p1N, String p2N) {
         p1 = new Player(p1N, true);
         p2 = new Player(p2N, false);
@@ -45,6 +47,7 @@ public class GameLogic {
         }
     }
 
+    //Designed to be for the text-based approach of the game. Currently does not end just here for testing for the most part.
     public void gameFlow() {
         Scanner scan = new Scanner(System.in);
         boolean whiteTurn = true;
@@ -67,6 +70,7 @@ public class GameLogic {
         }
     }
 
+    //Logic for moving piece on the board.
     private boolean movePiece(int x, int y, int newX, int newY, boolean whiteTurn) {
         if(board[y][x].isWhite != whiteTurn) return false;
         boolean isPawn = board[y][x].getClass().getSimpleName().equals("Pawn");
@@ -97,6 +101,7 @@ public class GameLogic {
         return true;
     }
 
+    //Checks for overlapping move for horizontal and vertical movement. For example, rook not going over other pieces.
     private boolean hasObstructionsStraight(int x, int y, int newX, int newY) {
         int xInc, yInc;
         if (newX > x) xInc = 1;
@@ -125,6 +130,7 @@ public class GameLogic {
         return false;
     }
 
+    //Same as hasObstructionsStraight but for diagonal movement.
     private boolean hasObstructionsDiagonal(int x, int y, int newX, int newY) {
         int xInc, yInc;
         if(newX > x) xInc = 1;
@@ -143,11 +149,13 @@ public class GameLogic {
         return false;
     }
 
+    //Checks if pawn can move diagonally to take a piece. Returns true or false depending on if new location is diagonal in proper direction.
     private boolean isDiagonalPawn(int x, int y, int newX, int newY, boolean whiteTurn) {
         if (whiteTurn) return (newX == x + 1 || newX == x - 1) && newY == y - 1;
         else return (newX == x + 1 || newX == x - 1) && newY == y + 1;
     }
 
+    //Displays board in an easy way for debugging in the text based approach.
     public void displayBoard(){
         System.out.println("x 0 1 2 3 4 5 6 7");
         for (int row = 0; row < 8; row++) {
