@@ -13,10 +13,4 @@ public class Bishop extends Piece {
         }
         return false;
     }
-
-    //need to add this to all pieces so this is a placeholder for now
-    @Override
-    public boolean isOverlapStep() {
-        return false;
-    }
 }
