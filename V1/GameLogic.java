@@ -1,6 +1,7 @@
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 
 import java.util.ArrayList;
@@ -14,10 +15,6 @@ public class GameLogic {
     //Keeps track of captured pieces during game
     private ArrayList<Piece> capturedPieces;
     private boolean isGameOver;
-
-    @FXML
-    private GridPane grid;
-    private GridPane grid07;
 
     //Initialize players, board, and pieces for a game
     public GameLogic(String p1N, String p2N) {
@@ -206,8 +203,6 @@ public class GameLogic {
         System.out.println("Black: " + p2.getTakenPieces());
     }
 
-    @FXML
-    public void wPawn0Clicked(ActionEvent event){
-
+    public void wPawn0Click(MouseEvent mouseEvent) {
     }
 }

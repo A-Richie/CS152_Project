@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.shape.Rectangle?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="682.0" prefWidth="1007.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="682.0" prefWidth="1007.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ChessController">
    <children>
       <GridPane fx:id="grid" layoutX="33.0" layoutY="36.0">
          <columnConstraints>
@@ -246,7 +246,7 @@
                   <Image url="@Chess_Pieces/W_Pawn.png" />
                </image>
             </ImageView>
-            <ImageView fx:id="wPawnImg0" fitHeight="75.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true" GridPane.rowIndex="6">
+            <ImageView fx:id="wPawnImg0" fitHeight="75.0" fitWidth="75.0" onMouseClicked="#wPawn0Click" pickOnBounds="true" preserveRatio="true" GridPane.rowIndex="6">
                <image>
                   <Image url="@Chess_Pieces/W_Pawn.png" />
                </image>
