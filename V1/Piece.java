@@ -3,7 +3,7 @@ public abstract class Piece {
     private int x, y; // (0,0) is set to top left as default by JavaFX (more consistent this way)
     protected boolean hasMoved;
 
-    //isWhite will determine if the piece belgongs to white or black
+    //isWhite will determine if the piece belongs to white or black
     public Piece(int x, int y, boolean isWhite) {
         this.x = x;
         this.y = y;

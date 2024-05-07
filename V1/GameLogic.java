@@ -1,3 +1,8 @@
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
+
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -9,6 +14,10 @@ public class GameLogic {
     //Keeps track of captured pieces during game
     private ArrayList<Piece> capturedPieces;
     private boolean isGameOver;
+
+    @FXML
+    private GridPane grid;
+    private GridPane grid07;
 
     //Initialize players, board, and pieces for a game
     public GameLogic(String p1N, String p2N) {
@@ -47,8 +56,8 @@ public class GameLogic {
         }
     }
 
-    //Designed to be for the text-based approach of the game. Currently does not end just here for testing for the most part.
-    public void gameFlow() {
+    //Designed to be for the text-based approach of the game. Currently, does not end just here for testing for the most part.
+    public void gameFlowText() {
         Scanner scan = new Scanner(System.in);
         boolean whiteTurn = true;
         String pieceToPlay = "";
@@ -65,7 +74,7 @@ public class GameLogic {
             int newX = Integer.parseInt(putPiece.substring(0,1));
             int newY = Integer.parseInt(putPiece.substring(1));
             movePiece(x,y,newX,newY, whiteTurn);
-            displayBoard();
+            displayBoardConsole();
             whiteTurn = !whiteTurn;
         }
     }
@@ -156,7 +165,7 @@ public class GameLogic {
     }
 
     //Displays board in an easy way for debugging in the text based approach.
-    public void displayBoard(){
+    public void displayBoardConsole(){
         System.out.println("x 0 1 2 3 4 5 6 7");
         for (int row = 0; row < 8; row++) {
             System.out.print(row + " ");
@@ -195,5 +204,10 @@ public class GameLogic {
         System.out.println("Captured Pieces:");
         System.out.println("White: " + p1.getTakenPieces());
         System.out.println("Black: " + p2.getTakenPieces());
+    }
+
+    @FXML
+    public void wPawn0Clicked(ActionEvent event){
+
     }
 }
