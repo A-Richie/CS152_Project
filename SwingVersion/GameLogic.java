@@ -2,12 +2,11 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class GameLogic {
-    // this needs to be worked on
+    protected Piece[][] board;
 
-    private Piece[][] board;
-
-    private Player p1, p2;
-    private ArrayList<Piece> capturedPieces;
+    protected Player p1, p2;
+    protected ArrayList<Piece> capturedPieces;
+    protected boolean isWhiteTurn;
     private boolean isGameOver;
 
     public GameLogic(String p1N, String p2N) {
@@ -18,6 +17,7 @@ public class GameLogic {
         board = new Piece[8][8];
 
         isGameOver = false;
+        isWhiteTurn = true;
 
         //Black Pieces
         board[0][0] = new Rook(0, 0, false);
@@ -46,7 +46,7 @@ public class GameLogic {
         }
     }
 
-    public void gameFlow() {
+    public void gameFlowText() {
         Scanner scan = new Scanner(System.in);
         boolean whiteTurn = true;
         String pieceToPlay = "";
@@ -62,14 +62,14 @@ public class GameLogic {
             putPiece = scan.nextLine();
             int newX = Integer.parseInt(putPiece.substring(0,1));
             int newY = Integer.parseInt(putPiece.substring(1));
-            movePiece(x,y,newX,newY, whiteTurn);
+            movePiece(x,y,newX,newY);
             displayBoard();
             whiteTurn = !whiteTurn;
         }
     }
 
-    private boolean movePiece(int x, int y, int newX, int newY, boolean whiteTurn) {
-        if(board[y][x].isWhite != whiteTurn) return false;
+    public boolean movePiece(int x, int y, int newX, int newY) {
+        if(board[y][x].isWhite != isWhiteTurn) return false;
         boolean isPawn = board[y][x].getClass().getSimpleName().equals("Pawn");
         boolean isBishop = board[y][x].getClass().getSimpleName().equals("Bishop");
         boolean isRook = board[y][x].getClass().getSimpleName().equals("Rook");
@@ -77,7 +77,7 @@ public class GameLogic {
         if(isBishop && hasObstructionsDiagonal(x, y, newX, newY)) return false;
         else if(isRook && hasObstructionsStraight(x, y, newX, newY)) return false;
         else if(isQueen && (hasObstructionsStraight(x, y, newX, newY) || hasObstructionsStraight(x, y, newX, newY))) return false;
-        if(isPawn && isDiagonalPawn(x,y,newX,newY, whiteTurn)){
+        if(isPawn && isDiagonalPawn(x,y,newX,newY, isWhiteTurn)){
             if(board[newY][newX] == null) return false;
         } else {
             if (!(board[y][x].isValidMove(x, y, newX, newY))) return false;
@@ -86,7 +86,7 @@ public class GameLogic {
             if (board[newY][newX].isWhite == board[y][x].isWhite) return false;
             else {
                 capturedPieces.add(board[newY][newX]);
-                if (whiteTurn) p1.addTakenPiece(board[newY][newX]);
+                if (isWhiteTurn) p1.addTakenPiece(board[newY][newX]);
                 else p2.addTakenPiece(board[newY][newX]);
             }
         }
@@ -188,5 +188,14 @@ public class GameLogic {
         System.out.println("Captured Pieces:");
         System.out.println("White: " + p1.getTakenPieces());
         System.out.println("Black: " + p2.getTakenPieces());
+    }
+
+    public boolean checkValidity(int row, int col) {
+        if(isWhiteTurn && board[row][col] != null) {
+            if(board[row][col].isWhite) return true;
+        } else if(!isWhiteTurn && board[row][col] != null){
+            if(!board[row][col].isWhite) return true;
+        }
+        return false;
     }
 }
