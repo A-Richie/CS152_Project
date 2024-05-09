@@ -22,9 +22,4 @@ public class Knight extends Piece {
         boolean isValid = up1left2 || up2left1 || up2right1 || up1right2 || down1right2 || down2right1 || down2left1 || down1left2;
         return isValid;
     }
-
-    @Override
-    public boolean isOverlapStep() {
-        return false;
-    }
 }

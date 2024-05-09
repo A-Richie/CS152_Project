@@ -6,16 +6,13 @@ public class Queen extends Piece {
     @Override
     public boolean isValidMove(int pX, int pY, int newX, int newY) {
         if(!isInBounds(newX, newY)) return false;
-        int dx = Math.abs(newX - pX);
-        int dy = Math.abs(newY - pY);
-
-        return (dx == 0 || dy == 0 || dx == dy);
-    }
-
-    //need to add this to all pieces so this is a placeholder for now
-    @Override
-    public boolean isOverlapStep() {
+        int dx = newX - pX;
+        int dy = newY - pY;
+        if (Math.abs(dx) == Math.abs(dy)) {
+            return true;
+        } else if(newX == pX || newY == pY) {
+            return true;
+        }
         return false;
     }
-
 }

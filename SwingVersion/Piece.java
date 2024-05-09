@@ -12,7 +12,6 @@ public abstract class Piece {
 
     public abstract boolean isValidMove(int pX, int pY, int newX, int newY);
 
-    public abstract boolean isOverlapStep();
 
     public boolean isInBounds(int newX, int newY){
         if(newX >= 0 && newX <= 7 && newY >= 0 && newY <= 7) return true;

@@ -7,7 +7,7 @@ public class GameLogic {
     protected Player p1, p2;
     protected ArrayList<Piece> capturedPieces;
     protected boolean isWhiteTurn;
-    private boolean isGameOver;
+    protected boolean isGameOver;
 
     public GameLogic(String p1N, String p2N) {
         p1 = new Player(p1N, true);
@@ -46,37 +46,97 @@ public class GameLogic {
         }
     }
 
-    public void gameFlowText() {
-        Scanner scan = new Scanner(System.in);
-        boolean whiteTurn = true;
-        String pieceToPlay = "";
-        String putPiece = "";
-        while(isGameOver == false){
-            if(whiteTurn) System.out.println(p1.getName() + "'s Turn");
-            else System.out.println(p2.getName() + "'s Turn");
-            System.out.println("Enter piece to move in format 'xy' (ex. (5,3) is 53):");
-            pieceToPlay = scan.nextLine();
-            int x = Integer.parseInt(pieceToPlay.substring(0,1));
-            int y = Integer.parseInt(pieceToPlay.substring(1));
-            System.out.println("Enter location of piece in the same format:");
-            putPiece = scan.nextLine();
-            int newX = Integer.parseInt(putPiece.substring(0,1));
-            int newY = Integer.parseInt(putPiece.substring(1));
-            movePiece(x,y,newX,newY);
-            displayBoard();
-            whiteTurn = !whiteTurn;
+    public boolean isCheck() {
+        int kingX = -1;
+        int kingY = -1;
+
+        // Find the current player's king
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                if (board[row][col] instanceof King && board[row][col].isWhite == isWhiteTurn) {
+                    kingX = col;
+                    kingY = row;
+                    break;
+                }
+            }
         }
+
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                if (board[row][col] != null && board[row][col].isWhite != isWhiteTurn) {
+                    if(board[row][col] instanceof Pawn){
+                        if (isPawnThreat(col, row, kingX, kingY)) return true;
+                    } else if (board[row][col].isValidMove(col, row, kingX, kingY)) {
+                        if (board[row][col] instanceof Rook || board[row][col] instanceof Queen) {
+                            if (hasObstructionsStraight(col, row, kingX, kingY)) continue;
+                        }
+                        if (board[row][col] instanceof Bishop || board[row][col] instanceof Queen) {
+                            if (hasObstructionsDiagonal(col, row, kingX, kingY)) continue;
+                        }
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
+
+    private boolean isPawnThreat(int col, int row, int kingX, int kingY) {
+        int direction;
+        if (board[row][col].isWhite) {
+            direction = -1;
+        } else {
+            direction = 1;
+        }
+
+        return (kingX == col + 1 || kingX == col - 1) && kingY == row + direction;
+    }
+
+    public boolean isCheckmate() {
+        if (!isCheck()) {
+            return false; // Not in checkmate if not in check
+        }
+
+//        for (int row = 0; row < 8; row++) {
+//            for (int col = 0; col < 8; col++) {
+//                if (board[row][col] != null && board[row][col].isWhite == isWhiteTurn) {
+//                    // Try moving each piece to check if it gets out of check
+//                    for (int newRow = 0; newRow < 8; newRow++) {
+//                        for (int newCol = 0; newCol < 8; newCol++) {
+//                            if (board[newRow][newCol] != null && movePiece(col, row, newCol, newRow)) {
+//                                // If moving the piece gets out of check, return false
+//                                if (!isCheck()) {
+//                                    // Undo the move
+//                                    movePiece(newCol, newRow, col, row);
+//                                    return false;
+//                                }
+//                                // Undo the move
+//                                movePiece(newCol, newRow, col, row);
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+
+        return false;
+    }
+
 
     public boolean movePiece(int x, int y, int newX, int newY) {
         if(board[y][x].isWhite != isWhiteTurn) return false;
+        // If in check, validate whether the move puts the king in a safe position
+        if (board[y][x].getClass().getSimpleName().equals("King") && !isSafeMoveForKing(x, y, newX, newY)) {
+            return false; // Reject the move if the king is not safe
+        }
         boolean isPawn = board[y][x].getClass().getSimpleName().equals("Pawn");
         boolean isBishop = board[y][x].getClass().getSimpleName().equals("Bishop");
         boolean isRook = board[y][x].getClass().getSimpleName().equals("Rook");
         boolean isQueen = board[y][x].getClass().getSimpleName().equals("Queen");
         if(isBishop && hasObstructionsDiagonal(x, y, newX, newY)) return false;
         else if(isRook && hasObstructionsStraight(x, y, newX, newY)) return false;
-        else if(isQueen && (hasObstructionsStraight(x, y, newX, newY) || hasObstructionsStraight(x, y, newX, newY))) return false;
+        else if(isQueen && (hasObstructionsStraight(x, y, newX, newY) && hasObstructionsDiagonal(x, y, newX, newY))) return false;
         if(isPawn && isDiagonalPawn(x,y,newX,newY, isWhiteTurn)){
             if(board[newY][newX] == null) return false;
         } else {
@@ -96,6 +156,22 @@ public class GameLogic {
         board[y][x].setY(newY);
         board[y][x] = null;
         return true;
+    }
+
+    private boolean isSafeMoveForKing(int x, int y, int newX, int newY) {
+        Piece originalPiece = board[newY][newX];
+        // Execute the move temporarily
+        board[newY][newX] = board[y][x];
+        board[y][x] = null;
+
+        // Check if the king is still in check after the move
+        boolean isSafe = !isCheck();
+
+        // Undo the move
+        board[y][x] = board[newY][newX];
+        board[newY][newX] = originalPiece;
+
+        return isSafe;
     }
 
     private boolean hasObstructionsStraight(int x, int y, int newX, int newY) {
@@ -147,47 +223,6 @@ public class GameLogic {
     private boolean isDiagonalPawn(int x, int y, int newX, int newY, boolean whiteTurn) {
         if (whiteTurn) return (newX == x + 1 || newX == x - 1) && newY == y - 1;
         else return (newX == x + 1 || newX == x - 1) && newY == y + 1;
-    }
-
-    public void displayBoard(){
-        System.out.println("x 0 1 2 3 4 5 6 7");
-        for (int row = 0; row < 8; row++) {
-            System.out.print(row + " ");
-            for (int col = 0; col < 8; col++) {
-                Piece piece = board[row][col];
-                if (piece == null) {
-                    System.out.print("- "); // Empty square
-                } else {
-                    switch (piece.getClass().getSimpleName()) {
-                        case "Pawn":
-                            System.out.print(piece.isWhite ? "P " : "p ");
-                            break;
-                        case "Rook":
-                            System.out.print(piece.isWhite ? "R " : "r ");
-                            break;
-                        case "Knight":
-                            System.out.print(piece.isWhite ? "N " : "n ");
-                            break;
-                        case "Bishop":
-                            System.out.print(piece.isWhite ? "B " : "b ");
-                            break;
-                        case "Queen":
-                            System.out.print(piece.isWhite ? "Q " : "q ");
-                            break;
-                        case "King":
-                            System.out.print(piece.isWhite ? "K " : "k ");
-                            break;
-                        default:
-                            System.out.print("? ");
-                            break;
-                    }
-                }
-            }
-            System.out.println(); // Move to the next row
-        }
-        System.out.println("Captured Pieces:");
-        System.out.println("White: " + p1.getTakenPieces());
-        System.out.println("Black: " + p2.getTakenPieces());
     }
 
     public boolean checkValidity(int row, int col) {

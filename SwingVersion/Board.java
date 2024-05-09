@@ -52,16 +52,37 @@ public class Board {
     }
 
     public void gameFlow(){
-        if (startTileRow != -1 && startTileCol != -1 && destTileRow != -1 && destTileCol != -1) {
+        if (destTileRow != -1 && destTileCol != -1) {
             if (game.movePiece(startTileCol, startTileRow, destTileCol, destTileRow)) {
-                //boardPanel.setAllPieces(game.board);
+                updateBoard();
+                game.isWhiteTurn = !game.isWhiteTurn;
+                if(game.isCheck()){
+                    if(game.isCheckmate()){
+                        game.isGameOver = true;
+                    } else {
+                        System.out.println("check!");
+                    }
+                }
             }
-            // Reset start and destination tile coordinates
             startTileRow = -1;
             startTileCol = -1;
             destTileRow = -1;
             destTileCol = -1;
+            removeBorder();
         }
+    }
+
+    private void removeBorder() {
+        for (int i = 0; i < boardPanel.boardTiles.size(); i++) {
+            boardPanel.boardTiles.get(i).setBorder(null);
+        }
+    }
+
+    public void updateBoard() {
+        boardPanel.removePieces();
+        boardPanel.setAllPieces(game.board);
+        boardPanel.revalidate();
+        boardPanel.repaint();
     }
 
     private class BoardPanel extends JPanel {
@@ -92,6 +113,12 @@ public class Board {
         public Dimension getPreferredSize() {
             return OUTTER_FRAME_SIZE;
         }
+
+        public void removePieces() {
+            for (int i = 0; i < boardTiles.size(); i++) {
+                if(boardTiles.get(i).pieceLabel != null) boardTiles.get(i).remove(boardTiles.get(i).pieceLabel);
+            }
+        }
     }
 
     private class TilePanel extends JPanel {
@@ -113,14 +140,17 @@ public class Board {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     super.mouseClicked(e);
-                    if(startTileRow == -1 || startTileCol == -1) {
+                    if (game.isGameOver) {
+                        return;
+                    }
+                    if(startTileRow == -1 && startTileCol == -1) {
                         //first click
                         if(game.checkValidity(row,column)){
                             setBorder(BorderFactory.createLineBorder(Color.CYAN,3));
                             startTileRow =  row;
                             startTileCol = column;
                         }
-                    } else if(destTileRow == -1 || destTileCol == -1){ // verify this
+                    } else if(destTileRow == -1 || destTileCol == -1 && (startTileCol != destTileCol && startTileRow != destTileRow)){ // verify this
                         //second click
                         destTileRow = row;
                         destTileCol = column;
