@@ -101,28 +101,56 @@ public class GameLogic {
     }
 
     public boolean movePiece(int x, int y, int newX, int newY) {
-        if(board[y][x].isWhite != isWhiteTurn) return false;
-        if (board[y][x] instanceof King && !isSafeMoveForKing(x, y, newX, newY)) {
-            return false;
-        }
         boolean isPawn = board[y][x].getClass().getSimpleName().equals("Pawn");
         boolean isBishop = board[y][x].getClass().getSimpleName().equals("Bishop");
         boolean isRook = board[y][x].getClass().getSimpleName().equals("Rook");
         boolean isQueen = board[y][x].getClass().getSimpleName().equals("Queen");
-
-        //broken en passant
-        if (isPawn && x != newX && board[newY][newX] == null) {
-            int direction = (board[y][x].isWhite) ? -1 : 1;
-            Piece adjacentPawn = board[y][newX];
-            if (adjacentPawn instanceof Pawn && adjacentPawn.isWhite != isWhiteTurn && ((Pawn) adjacentPawn).justDoubleMoved) {
-                if ((y == 3 && isWhiteTurn) || (y == 4 && !isWhiteTurn)) {
-                    capturedPieces.add(adjacentPawn);
-                    if (isWhiteTurn) p1.addTakenPiece(adjacentPawn);
-                    else p2.addTakenPiece(adjacentPawn);
-                    board[y][newX] = null;
+        //Castling
+        if(isRook && board[newY][newX].getClass().getSimpleName().equals("King") && board[newY][newX].isWhite == isWhiteTurn){
+            if(!board[y][x].hasMoved && !board[newY][newX].hasMoved){
+                if(x == 7){
+                    for(int i = x-1; i > newX; i--){
+                        if(board[y][i] != null) return false;
+                    }
+                    board[y][5] = board[y][x];
+                    board[y][x] = null;
+                    board[y][6] = board[newY][newX];
+                    board[newY][newX] = null;
+                    return true;
+                } else if (x == 0) {
+                    for(int i = x+1; i < newX; i++){
+                        if(board[y][i] != null) return false;
+                    }
+                    board[y][3] = board[y][x];
+                    board[y][x] = null;
+                    board[y][2] = board[newY][newX];
+                    board[newY][newX] = null;
+                    return true;
                 }
             }
         }
+
+        if(board[y][x].isWhite != isWhiteTurn) return false;
+        if (board[y][x] instanceof King && !isSafeMoveForKing(x, y, newX, newY)) {
+            return false;
+        }
+
+
+//        //broken en passant
+//        if (isPawn && x != newX && board[newY][newX] == null) {
+//            int direction = (board[y][x].isWhite) ? -1 : 1;
+//            Piece adjacentPawn = board[y][newX];
+//            if (adjacentPawn instanceof Pawn && adjacentPawn.isWhite != isWhiteTurn && ((Pawn) adjacentPawn).justDoubleMoved) {
+//                if ((y == 3 && isWhiteTurn) || (y == 4 && !isWhiteTurn)) {
+//                    capturedPieces.add(adjacentPawn);
+//                    if (isWhiteTurn) p1.addTakenPiece(adjacentPawn);
+//                    else p2.addTakenPiece(adjacentPawn);
+//                    board[y][newX] = null;
+//                }
+//            }
+//        }
+
+
 
         if(isPawn) {
             if(isWhiteTurn) {
