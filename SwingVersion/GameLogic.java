@@ -96,35 +96,9 @@ public class GameLogic {
     }
 
     public boolean isCheckmate() {
-        if (!isCheck()) {
-            return false;
-        }
-
-//        for (int row = 0; row < 8; row++) {
-//            for (int col = 0; col < 8; col++) {
-//                if (board[row][col] != null && board[row][col].isWhite == isWhiteTurn) {
-//                    // Try moving each piece to check if it gets out of check
-//                    for (int newRow = 0; newRow < 8; newRow++) {
-//                        for (int newCol = 0; newCol < 8; newCol++) {
-//                            if (board[newRow][newCol] != null && movePiece(col, row, newCol, newRow)) {
-//                                // If moving the piece gets out of check, return false
-//                                if (!isCheck()) {
-//                                    // Undo the move
-//                                    movePiece(newCol, newRow, col, row);
-//                                    return false;
-//                                }
-//                                // Undo the move
-//                                movePiece(newCol, newRow, col, row);
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-
+        //need to implement this
         return false;
     }
-
 
     public boolean movePiece(int x, int y, int newX, int newY) {
         if(board[y][x].isWhite != isWhiteTurn) return false;
@@ -135,6 +109,26 @@ public class GameLogic {
         boolean isBishop = board[y][x].getClass().getSimpleName().equals("Bishop");
         boolean isRook = board[y][x].getClass().getSimpleName().equals("Rook");
         boolean isQueen = board[y][x].getClass().getSimpleName().equals("Queen");
+
+        //broken en passant
+        if (isPawn && x != newX && board[newY][newX] == null) {
+            int direction = (board[y][x].isWhite) ? -1 : 1;
+            Piece adjacentPawn = board[y][newX];
+            if (adjacentPawn instanceof Pawn && adjacentPawn.isWhite != isWhiteTurn && ((Pawn) adjacentPawn).justDoubleMoved) {
+                if ((y == 3 && isWhiteTurn) || (y == 4 && !isWhiteTurn)) {
+                    capturedPieces.add(adjacentPawn);
+                    if (isWhiteTurn) p1.addTakenPiece(adjacentPawn);
+                    else p2.addTakenPiece(adjacentPawn);
+                    board[y][newX] = null;
+                }
+            }
+        }
+
+        if(isPawn) {
+            if(isWhiteTurn) {
+                if(x == newX && y-1 == newY && board[newY][newX] != null) return false;
+            } else if (x == newX && y+1 == newY && board[newY][newX] != null) return false;
+        }
         if(isBishop && hasObstructionsDiagonal(x, y, newX, newY)) return false;
         else if(isRook && hasObstructionsStraight(x, y, newX, newY)) return false;
         else if(isQueen && (hasObstructionsStraight(x, y, newX, newY) && hasObstructionsDiagonal(x, y, newX, newY))) return false;

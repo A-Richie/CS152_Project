@@ -61,6 +61,7 @@ public class Board {
                     game.isInCheck = true;
                     if(game.isCheckmate()){
                         game.isGameOver = true;
+                        System.exit(0);
                     } else {
                         //Add code to display that it is check and that the king should be the only piece moving.
                     }
