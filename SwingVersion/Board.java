@@ -28,7 +28,7 @@ public class Board {
     GameLogic game;
 
 
-
+    //Default board constructor which sets up all the graphical interfaces and the selection of pieces.
     public Board() {
         //Creates the board for the GUI
         String player1 = javax.swing.JOptionPane.showInputDialog("What is the name of Player 1 (White)?");
@@ -46,21 +46,23 @@ public class Board {
 
         this.gameGUI.add(this.boardPanel, BorderLayout.CENTER);
         this.gameGUI.setSize(OUTTER_FRAME_SIZE);
-        this.gameGUI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Properly close the application
+        this.gameGUI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //Displays the board
         this.gameGUI.setVisible(true);
     }
 
+    //Gets run when the second piece is selected. This does the basic game flow where character switches, moves the piece, checks or check or checkmate, etc.
     public void gameFlow(){
         if (destTileRow != -1 && destTileCol != -1) {
             if (game.movePiece(startTileCol, startTileRow, destTileCol, destTileRow)) {
                 updateBoard();
                 game.isWhiteTurn = !game.isWhiteTurn;
                 if(game.isCheck()){
+                    game.isInCheck = true;
                     if(game.isCheckmate()){
                         game.isGameOver = true;
                     } else {
-                        System.out.println("check!");
+                        //Add code to display that it is check and that the king should be the only piece moving.
                     }
                 }
             }
@@ -72,12 +74,14 @@ public class Board {
         }
     }
 
+    //Removes border around selected piece when done with turn.
     private void removeBorder() {
         for (int i = 0; i < boardPanel.boardTiles.size(); i++) {
             boardPanel.boardTiles.get(i).setBorder(null);
         }
     }
 
+    //Updates board to change positions of pieces when turn is complete.
     public void updateBoard() {
         boardPanel.removePieces();
         boardPanel.setAllPieces(game.board);
@@ -101,6 +105,8 @@ public class Board {
 
             }
         }
+
+        //Sets all the pieces up on the board
         void setAllPieces(Piece[][] board){
             for (int i = 0; i < boardTiles.size(); i++) {
                 if(board[boardTiles.get(i).getRow()][boardTiles.get(i).getCol()] != null) {
@@ -114,6 +120,7 @@ public class Board {
             return OUTTER_FRAME_SIZE;
         }
 
+        //Clears all pieces for preparation for updating the board.
         public void removePieces() {
             for (int i = 0; i < boardTiles.size(); i++) {
                 if(boardTiles.get(i).pieceLabel != null) boardTiles.get(i).remove(boardTiles.get(i).pieceLabel);
@@ -135,7 +142,9 @@ public class Board {
             setPreferredSize(TILE_DIMENSION);
             assignTileColor(row, column);
 
-            setFocusable(true); // Enable mouse events for this panel
+            setFocusable(true);
+
+            //Main listener for the selection of pieces
             addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
@@ -145,6 +154,9 @@ public class Board {
                     }
                     if(startTileRow == -1 && startTileCol == -1) {
                         //first click
+                        if(game.isInCheck){
+                            if(!(game.board[row][column] instanceof King)) return;
+                        }
                         if(game.checkValidity(row,column)){
                             setBorder(BorderFactory.createLineBorder(Color.CYAN,3));
                             startTileRow =  row;
@@ -163,7 +175,7 @@ public class Board {
                         destTileCol = -1;
                         setBorder(null);
                     }
-                    System.out.println("Clicked on row: " + row + ", column: " + column);
+                    //System.out.println("Clicked on row: " + row + ", column: " + column);
                 }
             });
 
@@ -199,6 +211,7 @@ public class Board {
             }
         }
 
+        //Algorithm for setting individual pieces up.
         public void setPiece(Piece piece) {
             String defaultStartPath = "SwingVersion/Chess_Pieces/";
             String color;

@@ -8,6 +8,7 @@ public class GameLogic {
     protected ArrayList<Piece> capturedPieces;
     protected boolean isWhiteTurn;
     protected boolean isGameOver;
+    protected boolean isInCheck;
 
     public GameLogic(String p1N, String p2N) {
         p1 = new Player(p1N, true);
@@ -18,6 +19,7 @@ public class GameLogic {
 
         isGameOver = false;
         isWhiteTurn = true;
+        isInCheck = false;
 
         //Black Pieces
         board[0][0] = new Rook(0, 0, false);
@@ -95,7 +97,7 @@ public class GameLogic {
 
     public boolean isCheckmate() {
         if (!isCheck()) {
-            return false; // Not in checkmate if not in check
+            return false;
         }
 
 //        for (int row = 0; row < 8; row++) {
@@ -126,9 +128,8 @@ public class GameLogic {
 
     public boolean movePiece(int x, int y, int newX, int newY) {
         if(board[y][x].isWhite != isWhiteTurn) return false;
-        // If in check, validate whether the move puts the king in a safe position
-        if (board[y][x].getClass().getSimpleName().equals("King") && !isSafeMoveForKing(x, y, newX, newY)) {
-            return false; // Reject the move if the king is not safe
+        if (board[y][x] instanceof King && !isSafeMoveForKing(x, y, newX, newY)) {
+            return false;
         }
         boolean isPawn = board[y][x].getClass().getSimpleName().equals("Pawn");
         boolean isBishop = board[y][x].getClass().getSimpleName().equals("Bishop");
@@ -155,6 +156,7 @@ public class GameLogic {
         board[y][x].setX(newX);
         board[y][x].setY(newY);
         board[y][x] = null;
+        if(isInCheck) isInCheck = false;
         return true;
     }
 
