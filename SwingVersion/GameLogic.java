@@ -135,7 +135,6 @@ public class GameLogic {
             return false;
         }
 
-
 //        //broken en passant
 //        if (isPawn && x != newX && board[newY][newX] == null) {
 //            int direction = (board[y][x].isWhite) ? -1 : 1;
@@ -149,8 +148,6 @@ public class GameLogic {
 //                }
 //            }
 //        }
-
-
 
         if(isPawn) {
             if(isWhiteTurn) {
