@@ -103,10 +103,9 @@ public class Board {
         checkLabel.setAlignmentY(BOTTOM_ALIGNMENT);
         checkLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        this.capturePanel.add(checkLabel);
 
         this.capturePanel.add(capturedLabel);
-
-        this.capturePanel.add(checkLabel);
 
         this.player1Panel.add(player1Label);
         this.player2Panel.add(player2Label);
