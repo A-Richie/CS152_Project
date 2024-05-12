@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class GameLogic {
     protected Piece[][] board;
@@ -8,7 +7,6 @@ public class GameLogic {
     protected ArrayList<Piece> capturedPieces;
     protected boolean isWhiteTurn;
     protected boolean isGameOver;
-    protected boolean isInCheck;
 
     public GameLogic(String p1N, String p2N) {
         p1 = new Player(p1N, true);
@@ -19,7 +17,6 @@ public class GameLogic {
 
         isGameOver = false;
         isWhiteTurn = true;
-        isInCheck = false;
 
         //Black Pieces
         board[0][0] = new Rook(0, 0, false);
@@ -55,7 +52,8 @@ public class GameLogic {
         // Find the current player's king
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
-                if (board[row][col] instanceof King && board[row][col].isWhite == isWhiteTurn) {
+                Piece piece = board[row][col];
+                if (piece instanceof King && piece.isWhite == isWhiteTurn) {
                     kingX = col;
                     kingY = row;
                     break;
@@ -63,19 +61,22 @@ public class GameLogic {
             }
         }
 
+        // Check if any opponent's piece threatens the king
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
-                if (board[row][col] != null && board[row][col].isWhite != isWhiteTurn) {
-                    if(board[row][col] instanceof Pawn){
-                        if (isPawnThreat(col, row, kingX, kingY)) return true;
-                    } else if (board[row][col].isValidMove(col, row, kingX, kingY)) {
-                        if (board[row][col] instanceof Rook || board[row][col] instanceof Queen) {
-                            if (hasObstructionsStraight(col, row, kingX, kingY)) continue;
-                        }
-                        if (board[row][col] instanceof Bishop || board[row][col] instanceof Queen) {
-                            if (hasObstructionsDiagonal(col, row, kingX, kingY)) continue;
-                        }
+                Piece piece = board[row][col];
+                if (piece != null && piece.isWhite != isWhiteTurn) {
+                    if (piece instanceof Pawn && isPawnThreat(col, row, kingX, kingY)) {
                         return true;
+                    } else if (piece instanceof Knight && isKnightThreat(col, row, kingX, kingY)) {
+                        return true;
+                    } else if (piece.isValidMove(col, row, kingX, kingY)) {
+                        if ((piece instanceof Rook || piece instanceof Queen) && hasObstructionsStraight(col, row, kingX, kingY)) {
+                            return true;
+                        }
+                        if ((piece instanceof Bishop || piece instanceof Queen) && hasObstructionsDiagonal(col, row, kingX, kingY)) {
+                            return true;
+                        }
                     }
                 }
             }
@@ -83,6 +84,21 @@ public class GameLogic {
 
         return false;
     }
+
+    private boolean isKnightThreat(int knightX, int knightY, int kingX, int kingY) {
+        int[][] knightMoves = { { -2, -1 }, { -1, -2 }, { 1, -2 }, { 2, -1 }, { 2, 1 }, { 1, 2 }, { -1, 2 }, { -2, 1 } };
+
+        for (int[] move : knightMoves) {
+            int newX = knightX + move[0];
+            int newY = knightY + move[1];
+            if (newX >= 0 && newX < 8 && newY >= 0 && newY < 8 && newX == kingX && newY == kingY) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
 
     private boolean isPawnThreat(int col, int row, int kingX, int kingY) {
         int direction;
@@ -106,7 +122,7 @@ public class GameLogic {
         boolean isRook = board[y][x].getClass().getSimpleName().equals("Rook");
         boolean isQueen = board[y][x].getClass().getSimpleName().equals("Queen");
         //Castling
-        if(isRook && board[newY][newX].getClass().getSimpleName().equals("King") && board[newY][newX].isWhite == isWhiteTurn){
+        if(isRook && board[newY][newX] != null && board[newY][newX].getClass().getSimpleName().equals("King") && board[newY][newX].isWhite == isWhiteTurn){
             if(!board[y][x].hasMoved && !board[newY][newX].hasMoved){
                 if(x == 7){
                     for(int i = x-1; i > newX; i--){
@@ -131,9 +147,9 @@ public class GameLogic {
         }
 
         if(board[y][x].isWhite != isWhiteTurn) return false;
-        if (board[y][x] instanceof King && !isSafeMoveForKing(x, y, newX, newY)) {
-            return false;
-        }
+//        if (board[y][x] instanceof King && !isSafeMove(x, y, newX, newY)) {
+//            return false;
+//        }
 
 //        //broken en passant
 //        if (isPawn && x != newX && board[newY][newX] == null) {
@@ -175,17 +191,16 @@ public class GameLogic {
         board[y][x].setX(newX);
         board[y][x].setY(newY);
         board[y][x] = null;
-        if(isInCheck) isInCheck = false;
         return true;
     }
 
-    private boolean isSafeMoveForKing(int x, int y, int newX, int newY) {
+    public boolean isSafeMove(int x, int y, int newX, int newY) {
         Piece originalPiece = board[newY][newX];
         // Execute the move temporarily
         board[newY][newX] = board[y][x];
         board[y][x] = null;
 
-        // Check if the king is still in check after the move
+        // Check if the piece is still in check after the move
         boolean isSafe = !isCheck();
 
         // Undo the move
@@ -254,4 +269,5 @@ public class GameLogic {
         }
         return false;
     }
+
 }

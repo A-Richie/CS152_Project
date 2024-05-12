@@ -54,18 +54,9 @@ public class Board {
     //Gets run when the second piece is selected. This does the basic game flow where character switches, moves the piece, checks or check or checkmate, etc.
     public void gameFlow(){
         if (destTileRow != -1 && destTileCol != -1) {
-            if (game.movePiece(startTileCol, startTileRow, destTileCol, destTileRow)) {
+            if (game.isSafeMove(startTileCol, startTileRow, destTileCol, destTileRow) && game.movePiece(startTileCol, startTileRow, destTileCol, destTileRow)) {
                 updateBoard();
                 game.isWhiteTurn = !game.isWhiteTurn;
-                if(game.isCheck()){
-                    game.isInCheck = true;
-                    if(game.isCheckmate()){
-                        game.isGameOver = true;
-                        System.exit(0);
-                    } else {
-                        //Add code to display that it is check and that the king should be the only piece moving.
-                    }
-                }
             }
             startTileRow = -1;
             startTileCol = -1;
@@ -155,9 +146,6 @@ public class Board {
                     }
                     if(startTileRow == -1 && startTileCol == -1) {
                         //first click
-                        if(game.isInCheck){
-                            if(!(game.board[row][column] instanceof King)) return;
-                        }
                         if(game.checkValidity(row,column)){
                             setBorder(BorderFactory.createLineBorder(Color.CYAN,3));
                             startTileRow =  row;
