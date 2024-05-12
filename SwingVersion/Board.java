@@ -55,6 +55,15 @@ public class Board {
     public void gameFlow(){
         if (destTileRow != -1 && destTileCol != -1) {
             if (game.isSafeMove(startTileCol, startTileRow, destTileCol, destTileRow) && game.movePiece(startTileCol, startTileRow, destTileCol, destTileRow)) {
+                if(game.isCheck()){
+                    System.out.println("check!");
+                    if(game.isCheckmate()){
+                        game.isGameOver = true;
+                        System.exit(0);
+                    } else {
+                        //Add code to display that it is check and that the king should be the only piece moving.
+                    }
+                }
                 updateBoard();
                 game.isWhiteTurn = !game.isWhiteTurn;
             }

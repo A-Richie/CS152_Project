@@ -72,11 +72,14 @@ public class GameLogic {
                         return true;
                     } else if (piece.isValidMove(col, row, kingX, kingY)) {
                         if ((piece instanceof Rook || piece instanceof Queen) && hasObstructionsStraight(col, row, kingX, kingY)) {
-                            return true;
+                            System.out.println(col);
+                            System.out.println(row);
+                            return false;
                         }
                         if ((piece instanceof Bishop || piece instanceof Queen) && hasObstructionsDiagonal(col, row, kingX, kingY)) {
-                            return true;
+                            return false;
                         }
+                        return true;
                     }
                 }
             }
@@ -97,8 +100,6 @@ public class GameLogic {
         }
         return false;
     }
-
-
 
     private boolean isPawnThreat(int col, int row, int kingX, int kingY) {
         int direction;
@@ -121,6 +122,8 @@ public class GameLogic {
         boolean isBishop = board[y][x].getClass().getSimpleName().equals("Bishop");
         boolean isRook = board[y][x].getClass().getSimpleName().equals("Rook");
         boolean isQueen = board[y][x].getClass().getSimpleName().equals("Queen");
+
+        if(x == newX && y == newY) return false;
         //Castling
         if(isRook && board[newY][newX] != null && board[newY][newX].getClass().getSimpleName().equals("King") && board[newY][newX].isWhite == isWhiteTurn){
             if(!board[y][x].hasMoved && !board[newY][newX].hasMoved){
@@ -239,22 +242,20 @@ public class GameLogic {
     }
 
     private boolean hasObstructionsDiagonal(int x, int y, int newX, int newY) {
-        int xInc, yInc;
-        if(newX > x) xInc = 1;
-        else xInc = -1;
-        if(newY > y) yInc = 1;
-        else yInc = -1;
+        int xInc = (newX > x) ? 1 : -1;
+        int yInc = (newY > y) ? 1 : -1;
 
         int currX = x + xInc;
         int currY = y + yInc;
 
-        while (currX != newX && currY != newY) {
+        while (currX != newX && currY != newY && currX >= 0 && currX < 8 && currY >= 0 && currY < 8) {
             if (board[currY][currX] != null) return true;
             currX += xInc;
             currY += yInc;
         }
         return false;
     }
+
 
     private boolean isDiagonalPawn(int x, int y, int newX, int newY, boolean whiteTurn) {
         if (whiteTurn) return (newX == x + 1 || newX == x - 1) && newY == y - 1;
