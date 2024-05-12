@@ -71,15 +71,13 @@ public class GameLogic {
                     } else if (piece instanceof Knight && isKnightThreat(col, row, kingX, kingY)) {
                         return true;
                     } else if (piece.isValidMove(col, row, kingX, kingY)) {
-                        if ((piece instanceof Rook || piece instanceof Queen) && hasObstructionsStraight(col, row, kingX, kingY)) {
-                            System.out.println(col);
-                            System.out.println(row);
-                            return false;
+                        if ((piece instanceof Rook || piece instanceof Queen) && !hasObstructionsStraight(kingX, kingY, col, row)) {
+                            return true;
                         }
-                        if ((piece instanceof Bishop || piece instanceof Queen) && hasObstructionsDiagonal(col, row, kingX, kingY)) {
-                            return false;
+                        if ((piece instanceof Bishop || piece instanceof Queen) && !hasObstructionsDiagonal(kingX, kingY, col, row)) {
+                            return true;
                         }
-                        return true;
+                        //return true;
                     }
                 }
             }
@@ -104,13 +102,14 @@ public class GameLogic {
     private boolean isPawnThreat(int col, int row, int kingX, int kingY) {
         int direction;
         if (board[row][col].isWhite) {
-            direction = -1;
+            direction = -1; // For white pawns, the direction is upward (negative)
         } else {
-            direction = 1;
+            direction = 1; // For black pawns, the direction is downward (positive)
         }
 
-        return (kingX == col + 1 || kingX == col - 1) && kingY == row + direction;
+        return (kingX == col + direction && kingY == row + direction) || (kingX == col - direction && kingY == row + direction);
     }
+
 
     public boolean isCheckmate() {
         //need to implement this
@@ -148,26 +147,7 @@ public class GameLogic {
                 }
             }
         }
-
         if(board[y][x].isWhite != isWhiteTurn) return false;
-//        if (board[y][x] instanceof King && !isSafeMove(x, y, newX, newY)) {
-//            return false;
-//        }
-
-//        //broken en passant
-//        if (isPawn && x != newX && board[newY][newX] == null) {
-//            int direction = (board[y][x].isWhite) ? -1 : 1;
-//            Piece adjacentPawn = board[y][newX];
-//            if (adjacentPawn instanceof Pawn && adjacentPawn.isWhite != isWhiteTurn && ((Pawn) adjacentPawn).justDoubleMoved) {
-//                if ((y == 3 && isWhiteTurn) || (y == 4 && !isWhiteTurn)) {
-//                    capturedPieces.add(adjacentPawn);
-//                    if (isWhiteTurn) p1.addTakenPiece(adjacentPawn);
-//                    else p2.addTakenPiece(adjacentPawn);
-//                    board[y][newX] = null;
-//                }
-//            }
-//        }
-
         if(isPawn) {
             if(isWhiteTurn) {
                 if(x == newX && y-1 == newY && board[newY][newX] != null) return false;
@@ -240,6 +220,7 @@ public class GameLogic {
 
         return false;
     }
+
 
     private boolean hasObstructionsDiagonal(int x, int y, int newX, int newY) {
         int xInc = (newX > x) ? 1 : -1;
