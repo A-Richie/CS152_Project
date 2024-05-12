@@ -134,9 +134,7 @@ public class GameLogic {
                                 } else if ((piece instanceof Rook || piece instanceof Queen) && hasObstructionsStraight(col, row, toCol, toRow)) {
                                 } else if ((piece instanceof Bishop || piece instanceof Queen) && hasObstructionsDiagonal(col, row, toCol, toRow)) {
                                 } else {
-                                    System.out.println("No Checkmate");
-                                    //Board.showCheckMate();
-                                    return false;
+                                    return true;
                                 }
                             }
                         }
@@ -144,10 +142,7 @@ public class GameLogic {
                 }
             }
         }
-
-
-
-        return true;
+        return false;
     }
 
     private boolean pawnIllegalMove(int x, int y, int newX, int newY) {
@@ -235,20 +230,6 @@ public class GameLogic {
         // Check if the piece is still in check after the move
         boolean isSafe = !isCheck();
 
-        if(isSafe)
-        {
-            //This clears the showcheck
-            Board.removeCheck();
-        }
-        else{
-
-            if(isWhiteTurn)
-            {
-                Board.showCheck(p1.getName());
-            }
-            else
-                Board.showCheck(p2.getName());
-        }
 
         // Undo the move
         board[y][x] = board[newY][newX];

@@ -176,11 +176,34 @@ public class Board {
             destTileRow = -1;
             destTileCol = -1;
             removeBorder();
+
+
+
             if(game.isCheck()){
+                if(game.isWhiteTurn)
+                {
+                    showCheck(game.p1.getName());
+                }
+                else
+                    showCheck(game.p2.getName());
+
                 if(game.isCheckmate()) {
+                    showCheckMate();
                     System.exit(0);
                 }
             }
+            else {
+                removeCheck();
+            }
+
+
+
+
+
+
+
+
+
             updateBoard();
         }
     }
