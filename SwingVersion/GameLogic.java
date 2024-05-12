@@ -77,7 +77,6 @@ public class GameLogic {
                         if ((piece instanceof Bishop || piece instanceof Queen) && !hasObstructionsDiagonal(kingX, kingY, col, row)) {
                             return true;
                         }
-                        //return true;
                     }
                 }
             }
