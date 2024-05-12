@@ -345,7 +345,7 @@ public class Board {
         public void setPiece(Piece piece) {
             // String defaultStartPath = "Src/Chess_Pieces/";  // For Alyssa's IDE
             // String defaultStartPath = "SwingVersion/Chess_Pieces/";
-            String defaultStartPath = "Src/Chess_Pieces/";
+            String defaultStartPath = "SwingVersion/Chess_Pieces/";
             String color;
             if(piece.isWhite) color = "W_";
             else color = "B_";

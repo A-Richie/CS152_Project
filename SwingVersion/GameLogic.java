@@ -134,7 +134,7 @@ public class GameLogic {
                                 } else if ((piece instanceof Rook || piece instanceof Queen) && hasObstructionsStraight(col, row, toCol, toRow)) {
                                 } else if ((piece instanceof Bishop || piece instanceof Queen) && hasObstructionsDiagonal(col, row, toCol, toRow)) {
                                 } else {
-                                    return true;
+                                    return false;
                                 }
                             }
                         }
@@ -142,7 +142,7 @@ public class GameLogic {
                 }
             }
         }
-        return false;
+        return true;
     }
 
     private boolean pawnIllegalMove(int x, int y, int newX, int newY) {
