@@ -19,6 +19,7 @@ public class Board {
 
     private final JFrame gameGUI;
     private final BoardPanel boardPanel;
+
     private static JPanel capturePanel;
     private final JPanel playerPanel;
     private static JPanel player1Panel;
@@ -36,16 +37,27 @@ public class Board {
     private static String player1;
     private String player2;
 
+    private static JLabel checkLabel;
+
+    private static boolean checkDisplayFlag;
+
+    private static int checkDisplayNumber;
     GameLogic game;
 
 
     //Default board constructor which sets up all the graphical interfaces and the selection of pieces.
     public Board() {
+        //Set up Check Label
+
+
+        checkDisplayFlag = false;
+        checkDisplayNumber = 0;
         //Creates the board for the GUI
-        String player1 = javax.swing.JOptionPane.showInputDialog("What is the name of Player 1 (White)?");
-        String player2 = javax.swing.JOptionPane.showInputDialog("What is the name of Player 2 (Black)?");
+        player1 = javax.swing.JOptionPane.showInputDialog("What is the name of Player 1 (White)?");
+        player2 = javax.swing.JOptionPane.showInputDialog("What is the name of Player 2 (Black)?");
         Font captureFont = new Font("Arial", Font.PLAIN, 20); // Change the font size as needed
         Font nameFont = new Font("Arial", Font.PLAIN, 16); // Font for the Player Names
+
         this.game = new GameLogic(player1, player2);
         this.gameGUI = new JFrame("Chess Game");
         this.gameGUI.setLayout(new BorderLayout());
@@ -70,7 +82,11 @@ public class Board {
         JLabel player1Label = new JLabel("Player 1: " + player1);
         JLabel player2Label = new JLabel("Player 2: " + player2);
         JLabel capturedLabel = new JLabel("Captured Pieces");
+        // player1Panel.setBorder(BorderFactory.createLineBorder(Color.BLACK)); // Add border to player1Panel
+        // playerPanel.setBorder(BorderFactory.createLineBorder(Color.GREEN)); // Add border to player1Panel
+        // capturePanel.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY)); // Add border to player1Panel
 
+        //Set fonts:
         capturedLabel.setFont(captureFont);
         player1Label.setFont(nameFont);
         player2Label.setFont(nameFont);
@@ -81,7 +97,17 @@ public class Board {
         capturedLabel.setAlignmentY(Component.TOP_ALIGNMENT);
         capturedLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+
+        checkLabel = new JLabel("In Check: " );
+        checkLabel.setFont(captureFont);
+        checkLabel.setAlignmentY(BOTTOM_ALIGNMENT);
+        checkLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+
         this.capturePanel.add(capturedLabel);
+
+        this.capturePanel.add(checkLabel);
+
         this.player1Panel.add(player1Label);
         this.player2Panel.add(player2Label);
         // Add space between player 1 and player 2 panels
@@ -113,14 +139,29 @@ public class Board {
         }
     }
     public static void showCheck(String name) {
-        // Show a simple message dialog
-        JLabel checkLabel = new JLabel("In Check: " + name);
-        checkLabel.setFont(captureFont);
 
-        checkLabel.setAlignmentY(BOTTOM_ALIGNMENT);
-        checkLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        capturePanel.add(checkLabel);
+        if(!checkDisplayFlag) {
+            // Show a simple message dialog
+            checkLabel.setText("In Check: " + name);
+            //capturePanel.remove(checkLabel);
+            checkDisplayFlag = true;
+        }
 
+
+    }
+
+    //Removes the CheckLabel if it's displayed
+    public static void removeCheck() {
+
+        if(checkDisplayFlag) {
+            checkLabel.setText("In Check: ");
+            checkDisplayFlag = false;
+        }
+    }
+
+    public static void showCheckMate()
+    {
+        JOptionPane.showMessageDialog(null, "Checkmate");
     }
 
     //Gets run when the second piece is selected. This does the basic game flow where character switches, moves the piece, checks or check or checkmate, etc.
@@ -199,6 +240,8 @@ public class Board {
     }
 
     private class TilePanel extends JPanel {
+
+
         private final int row;
         private final int column;
         private JLabel pieceLabel;
@@ -277,7 +320,9 @@ public class Board {
 
         //Algorithm for setting individual pieces up.
         public void setPiece(Piece piece) {
-            String defaultStartPath = "SwingVersion/Chess_Pieces/";
+            // String defaultStartPath = "Src/Chess_Pieces/";  // For Alyssa's IDE
+            // String defaultStartPath = "SwingVersion/Chess_Pieces/";
+            String defaultStartPath = "Src/Chess_Pieces/";
             String color;
             if(piece.isWhite) color = "W_";
             else color = "B_";

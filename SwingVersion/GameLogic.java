@@ -8,9 +8,12 @@ public class GameLogic {
     protected boolean isWhiteTurn;
     protected boolean isGameOver;
 
+    private int ischeckCounter;
+
     public GameLogic(String p1N, String p2N) {
         p1 = new Player(p1N, true);
         p2 = new Player(p2N, false);
+        ischeckCounter = 0;
 
         capturedPieces = new ArrayList<>();
         board = new Piece[8][8];
@@ -46,6 +49,7 @@ public class GameLogic {
     }
 
     public boolean isCheck() {
+        ischeckCounter++;
         int kingX = -1;
         int kingY = -1;
 
@@ -72,9 +76,11 @@ public class GameLogic {
                         return true;
                     } else if (piece.isValidMove(col, row, kingX, kingY)) {
                         if ((piece instanceof Rook || piece instanceof Queen) && !hasObstructionsStraight(kingX, kingY, col, row)) {
+
                             return true;
                         }
                         if ((piece instanceof Bishop || piece instanceof Queen) && !hasObstructionsDiagonal(kingX, kingY, col, row)) {
+
                             return true;
                         }
                     }
@@ -128,6 +134,8 @@ public class GameLogic {
                                 } else if ((piece instanceof Rook || piece instanceof Queen) && hasObstructionsStraight(col, row, toCol, toRow)) {
                                 } else if ((piece instanceof Bishop || piece instanceof Queen) && hasObstructionsDiagonal(col, row, toCol, toRow)) {
                                 } else {
+                                    System.out.println("No Checkmate");
+                                    //Board.showCheckMate();
                                     return false;
                                 }
                             }
@@ -136,6 +144,9 @@ public class GameLogic {
                 }
             }
         }
+
+
+
         return true;
     }
 
@@ -193,8 +204,18 @@ public class GameLogic {
             if (board[newY][newX].isWhite == board[y][x].isWhite) return false;
             else {
                 capturedPieces.add(board[newY][newX]);
-                if (isWhiteTurn) p1.addTakenPiece(board[newY][newX]);
-                else p2.addTakenPiece(board[newY][newX]);
+                if (isWhiteTurn)
+                {
+                    p1.addTakenPiece(board[newY][newX]);
+                    System.out.print("P1.getTaken: " + p1.getTakenPieces());
+                    Board.updateCapture(p1.getName(), board[newY][newX].getClass().getSimpleName());
+                }
+                else
+                {
+                    p2.addTakenPiece(board[newY][newX]);
+                    System.out.print("P2.getTaken: " + p2.getTakenPieces());
+                    Board.updateCapture(p2.getName(), board[newY][newX].getClass().getSimpleName());
+                }
             }
         }
         board[newY][newX] = board[y][x];
@@ -213,6 +234,21 @@ public class GameLogic {
 
         // Check if the piece is still in check after the move
         boolean isSafe = !isCheck();
+
+        if(isSafe)
+        {
+            //This clears the showcheck
+            Board.removeCheck();
+        }
+        else{
+
+            if(isWhiteTurn)
+            {
+                Board.showCheck(p1.getName());
+            }
+            else
+                Board.showCheck(p2.getName());
+        }
 
         // Undo the move
         board[y][x] = board[newY][newX];
