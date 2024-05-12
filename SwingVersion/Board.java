@@ -12,19 +12,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.sun.java.accessibility.util.AWTEventMonitor.addMouseListener;
+import static java.awt.Component.BOTTOM_ALIGNMENT;
 import static javax.swing.SwingUtilities.isRightMouseButton;
 
 public class Board {
 
     private final JFrame gameGUI;
     private final BoardPanel boardPanel;
+    private static JPanel capturePanel;
+    private final JPanel playerPanel;
+    private static JPanel player1Panel;
+    private static JPanel player2Panel;
     private int startTileRow;
     private int startTileCol;
     private int destTileRow;
     private int destTileCol;
-    private static final Dimension OUTTER_FRAME_SIZE = new Dimension(600, 600);
-    private static final Dimension BOARD_DIMENSION = new Dimension(400, 350);
+    private static final Dimension OUTTER_FRAME_SIZE = new Dimension(800, 600);
+    private static final Dimension BOARD_DIMENSION = new Dimension(500, 500);
     private static final Dimension TILE_DIMENSION = new Dimension(400, 350);
+
+    private static final Font pieceFont = new Font("Arial", Font.PLAIN, 14);
+    static Font captureFont = new Font("Arial", Font.PLAIN, 20); // font for major events
+    private static String player1;
+    private String player2;
+
     GameLogic game;
 
 
@@ -33,6 +44,8 @@ public class Board {
         //Creates the board for the GUI
         String player1 = javax.swing.JOptionPane.showInputDialog("What is the name of Player 1 (White)?");
         String player2 = javax.swing.JOptionPane.showInputDialog("What is the name of Player 2 (Black)?");
+        Font captureFont = new Font("Arial", Font.PLAIN, 20); // Change the font size as needed
+        Font nameFont = new Font("Arial", Font.PLAIN, 16); // Font for the Player Names
         this.game = new GameLogic(player1, player2);
         this.gameGUI = new JFrame("Chess Game");
         this.gameGUI.setLayout(new BorderLayout());
@@ -44,26 +57,76 @@ public class Board {
         this.boardPanel = new BoardPanel();
         this.boardPanel.setAllPieces(game.board);
 
+        /* Adds stuff for the GUI - add player names: */
+        this.capturePanel = new JPanel();
+        this.playerPanel = new JPanel();
+        this.player1Panel = new JPanel();
+        this.player2Panel = new JPanel();
+        this.capturePanel.setLayout(new BoxLayout(capturePanel, BoxLayout.Y_AXIS));
+        this.playerPanel.setLayout(new BoxLayout(playerPanel, BoxLayout.X_AXIS)); // Vertical layout
+        this.player1Panel.setLayout(new BoxLayout(player1Panel, BoxLayout.Y_AXIS));
+        this.player2Panel.setLayout(new BoxLayout(player2Panel, BoxLayout.Y_AXIS));
+        this.player1Panel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JLabel player1Label = new JLabel("Player 1: " + player1);
+        JLabel player2Label = new JLabel("Player 2: " + player2);
+        JLabel capturedLabel = new JLabel("Captured Pieces");
+
+        capturedLabel.setFont(captureFont);
+        player1Label.setFont(nameFont);
+        player2Label.setFont(nameFont);
+        player1Label.setAlignmentY(Component.TOP_ALIGNMENT); // Align text center vertically
+        player2Label.setAlignmentY(Component.TOP_ALIGNMENT); // Align text center vertically
+        player1Panel.setAlignmentY(Component.TOP_ALIGNMENT); // Align the entire panel to the top
+        player2Panel.setAlignmentY(Component.TOP_ALIGNMENT); // Align at the top
+        capturedLabel.setAlignmentY(Component.TOP_ALIGNMENT);
+        capturedLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        this.capturePanel.add(capturedLabel);
+        this.player1Panel.add(player1Label);
+        this.player2Panel.add(player2Label);
+        // Add space between player 1 and player 2 panels
+        this.player1Panel.add(Box.createRigidArea(new Dimension(10, 0))); //Creates border that has empty space
+        this.player2Panel.add(Box.createRigidArea(new Dimension(10, 0)));
+        this.playerPanel.add(player1Panel);
+        this.playerPanel.add(player2Panel);
+        this.capturePanel.add(playerPanel);
+
         this.gameGUI.add(this.boardPanel, BorderLayout.CENTER);
+        this.gameGUI.add(this.capturePanel, BorderLayout.EAST);
         this.gameGUI.setSize(OUTTER_FRAME_SIZE);
         this.gameGUI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //Displays the board
         this.gameGUI.setVisible(true);
     }
 
+    public static void updateCapture(String name, String piece) {
+        JLabel pieceLabel = new JLabel(piece.toString());
+        pieceLabel.setFont(pieceFont);
+
+        //pieceLabel.setAlignmentY(Component.TOP_ALIGNMENT);
+        if(name.equals(player1)){
+            player1Panel.add(pieceLabel);
+        }
+        //if the player that captured a piece is player 2 add the name to the corresponding name
+        else {
+            player2Panel.add(pieceLabel);
+        }
+    }
+    public static void showCheck(String name) {
+        // Show a simple message dialog
+        JLabel checkLabel = new JLabel("In Check: " + name);
+        checkLabel.setFont(captureFont);
+
+        checkLabel.setAlignmentY(BOTTOM_ALIGNMENT);
+        checkLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        capturePanel.add(checkLabel);
+
+    }
+
     //Gets run when the second piece is selected. This does the basic game flow where character switches, moves the piece, checks or check or checkmate, etc.
     public void gameFlow(){
         if (destTileRow != -1 && destTileCol != -1) {
             if (game.isSafeMove(startTileCol, startTileRow, destTileCol, destTileRow) && game.movePiece(startTileCol, startTileRow, destTileCol, destTileRow)) {
-                if(game.isCheck()){
-                    System.out.println("check!");
-                    if(game.isCheckmate()){
-                        game.isGameOver = true;
-                        System.exit(0);
-                    } else {
-                        //Add code to display that it is check and that the king should be the only piece moving.
-                    }
-                }
                 updateBoard();
                 game.isWhiteTurn = !game.isWhiteTurn;
             }
@@ -72,6 +135,12 @@ public class Board {
             destTileRow = -1;
             destTileCol = -1;
             removeBorder();
+            if(game.isCheck()){
+                if(game.isCheckmate()) {
+                    System.exit(0);
+                }
+            }
+            updateBoard();
         }
     }
 
@@ -150,9 +219,6 @@ public class Board {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     super.mouseClicked(e);
-                    if (game.isGameOver) {
-                        return;
-                    }
                     if(startTileRow == -1 && startTileCol == -1) {
                         //first click
                         if(game.checkValidity(row,column)){

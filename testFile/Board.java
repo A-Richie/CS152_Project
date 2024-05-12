@@ -127,7 +127,6 @@ public class Board {
         capturePanel.add(checkLabel);
 
     }
-    //public static void
 
 
     //Gets run when the second piece is selected. This does the basic game flow where character switches, moves the piece, checks or check or checkmate, etc.

@@ -111,7 +111,36 @@ public class GameLogic {
 
 
     public boolean isCheckmate() {
-        //need to implement this
+        if (!isCheck()) {
+            return false; // If not in check, not in checkmate
+        }
+
+        // Iterate through all pieces on the board
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                Piece piece = board[row][col];
+                if (piece != null && piece.isWhite == isWhiteTurn) {
+                    for (int toRow = 0; toRow < 8; toRow++) {
+                        for (int toCol = 0; toCol < 8; toCol++) {
+                            if (isSafeMove(col, row, toCol, toRow) && board[row][col].isValidMove(col,row,toCol,toRow)) {
+                                if(piece instanceof Pawn && pawnIllegalMove(col,row,toCol,toRow)){
+                                } else if(board[toRow][toCol] != null && board[toRow][toCol].isWhite == isWhiteTurn){
+                                } else if ((piece instanceof Rook || piece instanceof Queen) && hasObstructionsStraight(col, row, toCol, toRow)) {
+                                } else if ((piece instanceof Bishop || piece instanceof Queen) && hasObstructionsDiagonal(col, row, toCol, toRow)) {
+                                } else {
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    private boolean pawnIllegalMove(int x, int y, int newX, int newY) {
+        if(board[newY][newX] != null ) return true;
         return false;
     }
 
