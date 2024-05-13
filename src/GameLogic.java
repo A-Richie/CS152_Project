@@ -202,13 +202,13 @@ public class GameLogic {
                 if (isWhiteTurn)
                 {
                     p1.addTakenPiece(board[newY][newX]);
-                    System.out.print("P1.getTaken: " + p1.getTakenPieces());
+                    //System.out.print("P1.getTaken: " + p1.getTakenPieces());
                     Board.updateCapture(p1.getName(), board[newY][newX].getClass().getSimpleName());
                 }
                 else
                 {
                     p2.addTakenPiece(board[newY][newX]);
-                    System.out.print("P2.getTaken: " + p2.getTakenPieces());
+                    //System.out.print("P2.getTaken: " + p2.getTakenPieces());
                     Board.updateCapture(p2.getName(), board[newY][newX].getClass().getSimpleName());
                 }
             }
