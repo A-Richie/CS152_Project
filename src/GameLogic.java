@@ -157,6 +157,9 @@ public class GameLogic {
         boolean isQueen = board[y][x].getClass().getSimpleName().equals("Queen");
 
         if(x == newX && y == newY) return false;
+
+        if(board[y][x].isWhite != isWhiteTurn) return false;
+
         //Castling
         if(isRook && board[newY][newX] != null && board[newY][newX].getClass().getSimpleName().equals("King") && board[newY][newX].isWhite == isWhiteTurn){
             if(!board[y][x].hasMoved && !board[newY][newX].hasMoved){
@@ -181,7 +184,6 @@ public class GameLogic {
                 }
             }
         }
-        if(board[y][x].isWhite != isWhiteTurn) return false;
         if(isPawn) {
             if(isWhiteTurn) {
                 if(x == newX && y-1 == newY && board[newY][newX] != null) return false;
@@ -218,6 +220,11 @@ public class GameLogic {
         board[y][x].setX(newX);
         board[y][x].setY(newY);
         board[y][x] = null;
+
+        //Promotion to queen from pawn
+        if(isPawn && ((isWhiteTurn && newY == 0) || (!isWhiteTurn && newY == 7))){
+            board[newY][newX] = new Queen(newX,newY,isWhiteTurn);
+        }
         return true;
     }
 
