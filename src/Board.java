@@ -176,8 +176,6 @@ public class Board {
             destTileCol = -1;
             removeBorder();
 
-
-
             if(game.isCheck()){
                 if(game.isWhiteTurn)
                 {
@@ -194,15 +192,6 @@ public class Board {
             else {
                 removeCheck();
             }
-
-
-
-
-
-
-
-
-
             updateBoard();
         }
     }

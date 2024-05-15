@@ -237,7 +237,6 @@ public class GameLogic {
         // Check if the piece is still in check after the move
         boolean isSafe = !isCheck();
 
-
         // Undo the move
         board[y][x] = board[newY][newX];
         board[newY][newX] = originalPiece;
